@@ -143,7 +143,7 @@ def techPage():
                     if not table_df.empty and 'EXTENDED' in table_df.columns:
                         category_total = table_df['EXTENDED'].sum()
                         category_totals[category] = category_total
-                        
+
             total_price = 0.0
             taxRate = float(st.session_state.ticketDf['Tax_Rate'])
             category_table_data = []
@@ -164,14 +164,9 @@ def techPage():
             st.markdown(f'<style>{table_style}</style>', unsafe_allow_html=True)
             st.table(transposed_category_df)
 
-            # printH = f"**Price (Pre-Tax):**  ${total_price:.2f},       "
-            # printM = f"**Estimated Sales Tax:**  ${total_price*taxRate/100:.2f},       "
-            # printT = f"**Total (including tax):**  ${total_price_with_tax:.2f}"
-            # st.write(printH+printM+printT)
-            st.write(f"**Price (Pre-Tax):**  ${total_price:.2f},       **Estimated  Sales  Tax:**  ${total_price*taxRate/100:.2f},       **Total (including tax):**  ${total_price_with_tax:.2f}")
-            st.write(f"**Price (Pre-Tax):**  ${total_price:.2f},       **Estimated   Sales   Tax:**  ${total_price*taxRate/100:.2f},       **Total (including tax):**  ${total_price_with_tax:.2f}")
-            st.write(f"**Price (Pre-Tax):**  ${total_price:.2f},       **EstimatedSalesTax:**  ${total_price*taxRate/100:.2f},       **Total (including tax):**  ${total_price_with_tax:.2f}")
-            
+            right_column_content = f"""
+            **Price (Pre-Tax):**  ${total_price:.2f},   **Estimated Sales Tax:**  ${total_price*taxRate/100:.2f}   **Total (including tax):**  ${total_price_with_tax:.2f}"""
+            st.write(right_column_content)
             input_pdf = PdfReader(open('input.pdf', 'rb'))
             buffer = io.BytesIO()
             c = canvas.Canvas(buffer, pagesize=letter)
