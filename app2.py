@@ -60,36 +60,15 @@ if "workDesDf" not in st.session_state:
     st.session_state.workDesDf = None
 if 'selected_branches' not in st.session_state:
     st.session_state.selected_branches = []
-if "branch" not in st.session_state:
-    st.session_state.branch = getBranch()
-if "parentDf" not in st.session_state:
-    st.session_state.parentDf = getBranch()
+# if "branch" not in st.session_state:
+#     st.session_state.branch = getBranch()
+# if "parentDf" not in st.session_state:
+#     st.session_state.parentDf = getBranch()
 if 'expand_collapse_state' not in st.session_state:
     st.session_state.expand_collapse_state = True
 # if 'filtered_ticket' not in st.session_state:
 #     st.session_state.filtered_ticket = [event for event in st.session_state.filtered_ticket if event['BranchShortName'] in st.session_state.selected_branches]
 
-def refresh():
-    st.session_state.ticketN = ""
-    state_variables = [
-        "ticketN",
-        "pricingDf",
-        "ticketDf",
-        "TRatesDf",
-        "LRatesDf",
-        "misc_ops_df",
-        "edit",
-        "workDescription",
-        "NTE_Quote",
-        "editable",
-        "refresh_button",
-        "workDesDf",
-        "parentDf",
-    ]
-    for var_name in state_variables:
-        st.session_state[var_name] = None
-    st.experimental_set_query_params()
-    st.experimental_rerun()
 def techPage():
     if "labor_df" not in st.session_state:
         st.session_state.labor_df = pd.DataFrame()
@@ -111,8 +90,6 @@ def techPage():
             else:
                 st.session_state.workDesDf = workDes
             st.session_state.labor_df, st.session_state.trip_charge_df, st.session_state.parts_df, st.session_state.miscellaneous_charges_df, st.session_state.materials_and_rentals_df, st.session_state.subcontractor_df = getAllTicket(ticket=st.session_state.ticketN)
-        if st.sidebar.button("goBack", key="5"):
-            refresh()
         if len(st.session_state.ticketDf)==0:
             st.error("Please enter a ticket number or check the ticket number again")
         else:
@@ -128,35 +105,6 @@ def techPage():
             if parentDf["Status"].get(0) is not None and (parentDf["Status"].get(0) == "Approved" or parentDf["Status"].get(0) == "Processed"):
                 st.error("this ticket is now in GP")
                 st.session_state.editable = 0
-            left_data = {
-                    'To': st.session_state.ticketDf['CUST_NAME'] + " " + st.session_state.ticketDf['CUST_ADDRESS1'] + " " +
-                        st.session_state.ticketDf['CUST_ADDRESS2'] + " " + st.session_state.ticketDf['CUST_ADDRESS3'] + " " +
-                        st.session_state.ticketDf['CUST_CITY'] + " " + st.session_state.ticketDf['CUST_Zip'],
-                    'ATTN': ['ATTN']
-                }    
-            
-            col1, col2 = st.columns((2,1))
-            df_left = pd.DataFrame(left_data)
-            left_table_styles = [
-                {'selector': 'table', 'props': [('text-align', 'left'), ('border-collapse', 'collapse')]},
-                {'selector': 'th, td', 'props': [('padding', '8px'), ('border', '1px solid black')]}
-            ]
-            df_left_styled = df_left.style.set_table_styles(left_table_styles)
-
-            # Ticket Info table
-            data = {
-                'Site': st.session_state.ticketDf['LOC_LOCATNNM'],
-                'Ticket #': st.session_state.ticketN,
-                'Address': st.session_state.ticketDf['LOC_Address'] + " " + st.session_state.ticketDf['CITY'] + " " +
-                        st.session_state.ticketDf['STATE'] + " " + st.session_state.ticketDf['ZIP']
-            }
-
-            data1 = {
-                'PO #': st.session_state.ticketDf['Purchase_Order'],
-                'Date': formatted_date,
-                'BranchEmail': st.session_state.ticketDf['MailDispatch'], 
-                'Customer': st.session_state.ticketDf['LOC_CUSTNMBR']
-            }
 
             if st.session_state.get("miscellaneous_charges_df", None) is None or st.session_state.miscellaneous_charges_df.empty:
                 misc_charges_data = {
@@ -185,45 +133,36 @@ def techPage():
                 }
                 st.session_state.subcontractor_df = pd.DataFrame(subcontractor_data)
             
-            with st.expander("Work Description", expanded=True):
-                with st.container():
-                    st.text_area('***General description of Incurred:***', value = str(st.session_state.workDesDf["Incurred"].get(0)), disabled=True, height=100)
-                    st.text_area('***General description of Proposed work to be performed:***', value = str(st.session_state.workDesDf["Proposed"].get(0)), disabled=True, height=100)
-            st.write(f"NTE_Quote is {st.session_state.NTE_Quote}")
             categories = ['Labor', 'Trip Charge', 'Parts', 'Miscellaneous Charges', 'Materials and Rentals', 'Subcontractor']
-            
-            if st.button("Expand or Collapse all"):
-                st.session_state.expand_collapse_state = not st.session_state.expand_collapse_state
-                st.experimental_rerun()
 
             category_totals = {}
             for category in categories:
-                with st.expander(category, expanded=st.session_state.expand_collapse_state):
+                # with st.expander(category, expanded=st.session_state.expand_collapse_state):
                     table_df = getattr(st.session_state, f"{category.lower().replace(' ', '_')}_df")
-                    st.table(table_df)
+                    # st.table(table_df)
                     if not table_df.empty and 'EXTENDED' in table_df.columns:
                         category_total = table_df['EXTENDED'].sum()
                         category_totals[category] = category_total
-                        st.write(f"{category} Total : {category_totals[category]}")
-                    else:
-                        st.write(f"{category} Total : 0")
+                        # st.write(f"{category} Total : {category_totals[category]}")
+                    # else:
+                        # st.write(f"{category} Total : 0")
                 
             left_column_content = """
             *NOTE: Total (including tax) INCLUDES ESTIMATED SALES* \n*/ USE TAX*
             """
-
-            col1, col2 = st.columns([1, 1])
-            with col1: 
-                st.write(left_column_content)
-                total_price = 0.0
-                taxRate = st.number_input("Please input a tax rate in % (by 2 decimal)",
-                                        value=float(st.session_state.ticketDf['Tax_Rate']),
-                                        disabled=True,
-                                        format="%.2f",
-                                        key="tax_rate_input")
-                incol1, incol2, incol3 = st.columns([1,1,1])     
+            total_price = 0.0
+            taxRate = float(st.session_state.ticketDf['Tax_Rate'])
+            # col1, col2 = st.columns([1, 1])
+            # with col1: 
+                # st.write(left_column_content)
+                # total_price = 0.0
+                # taxRate = st.number_input("Please input a tax rate in % (by 2 decimal)",
+                #                         value=float(st.session_state.ticketDf['Tax_Rate']),
+                #                         disabled=True,
+                #                         format="%.2f",
+                #                         key="tax_rate_input")
+                # incol1, incol2, incol3 = st.columns([1,1,1])     
                 
-            
             category_table_data = []
             for category in categories:
                 table_df = getattr(st.session_state, f"{category.lower().replace(' ', '_')}_df")
@@ -245,8 +184,15 @@ def techPage():
             **Total (including tax)**
             ${total_price_with_tax:.2f}
             """
-            col2.dataframe(pd.DataFrame(category_table_data, columns=["Category", "Total"]), hide_index=True)
-            col2.write(right_column_content)
+            category_df = pd.DataFrame(category_table_data, columns=["Category", "Total"])
+            transposed_category_df = category_df.T
+
+            table_style = f"width: 100%; font-size: 18px;"
+            st.markdown(f'<style>{table_style}</style>', unsafe_allow_html=True)
+            st.table(transposed_category_df)
+
+            st.dataframe(transposed_category_df, hide_index=True)
+            st.write(right_column_content)
 
             input_pdf = PdfReader(open('input.pdf', 'rb'))
             buffer = io.BytesIO()
@@ -454,110 +400,24 @@ def techPage():
 
             pdf_content = merged_buffer.read()
             pdf_base64 = base64.b64encode(pdf_content).decode('utf-8')
-            
-            if incol2.button("Close PDF"):
-                incol2.text("PDF Closed")
-            if(incol1.button("Open PDF")):
-                with col1:
-                    pdf_display = F'<iframe src="data:application/pdf;base64,{pdf_base64}" width="800" height="950" type="application/pdf"></iframe>'
-                    st.download_button("Download PDF", merged_buffer, file_name=f'{st.session_state.ticketN}-quote.pdf', mime='application/pdf')
-                    st.markdown(pdf_display, unsafe_allow_html=True)
+            pdf_display = f'<embed src="data:application/pdf;base64,{pdf_base64}" width="1000" height="500" type="application/pdf">' 
+            st.download_button("Download PDF", merged_buffer, file_name=f'{st.session_state.ticketN}-quote.pdf', mime='application/pdf')
+            st.markdown(pdf_display, unsafe_allow_html=True)
+            # pdf_display = F'<iframe src="data:application/pdf;base64,{pdf_base64}" width="100%" height="1000" type="application/pdf"></iframe>'            
+            # st.markdown(pdf_display, unsafe_allow_html=True)
+            # st.write(pdf_display, unsafe_allow_html=True)
 
 def main():
-    st.set_page_config("Universal Quote Template", layout="wide")
-    st.markdown(
-        """
-       <style>
-       [data-testid="stSidebar"][aria-expanded="true"]{
-           min-width: 300px;
-           max-width: 300px;
-       },
-       <style>
-                .stButton button {
-                    float: left;
-                }
-                .stButton button:first-child {
-                    background-color: #0099FF;
-                    color: #FFFFFF;
-                    width: 120px;
-                    height: 50px;
-                }
-                .stButton button:hover {
-                    background-color: #FFFF00;
-                    color: #000000;
-                    width: 120px;
-                    height: 50px;
-                }
-                </style>
-       """,
-        unsafe_allow_html=True,
-    )
-    selected_branches = st.sidebar.multiselect("Select Branches", st.session_state.branch['BranchName'], key="select_branches", default=["Sanford"])
-    if len(selected_branches) > 0 and selected_branches != st.session_state.selected_branches:
-        st.session_state.selected_branches = selected_branches  
-    if ('ticketN' in st.session_state and not st.session_state.ticketN):
-            st.session_state.parentDf = getParent(st.session_state.selected_branches) 
-            st.session_state.parentDf = st.data_editor(
-                st.session_state.parentDf,
-                column_config={
-                    "TicketID": st.column_config.Column(
-                        "TicketID",
-                        help="Ticket ID",
-                        disabled=True
-                    ),
-                    "Branch": st.column_config.Column(
-                        "Branch",
-                        help="Branch",
-                        disabled=True
-                    ),
-                    "Status": st.column_config.SelectboxColumn(
-                        "Status",
-                        help="Status",
-                        options=["open", "close", "pending"],
-                        required=True,
-                        disabled=True
-
-                    ),
-                    "NTE_QUOTE": st.column_config.SelectboxColumn(
-                        "NTE_QUOTE",
-                        help="NTE QUOTE",
-                        options=["NTE", "QUOTE"],
-                        required=True,
-                        disabled=True
-                    ),
-                    "Editable": st.column_config.CheckboxColumn(
-                        "Editable",
-                        help="Editable",
-                        required=True,
-                        disabled=True
-                    ),
-                    "Insertdate": st.column_config.Column(
-                        "Insertdate",
-                        help="Insert Date",
-                        disabled=True
-                    ),
-                    "Approvedate": st.column_config.Column(
-                        "Approvedate",
-                        help="Approve Date",
-                        disabled=True
-                    ),
-                    "Declinedate": st.column_config.Column(
-                        "Declinedate",
-                        help="Decline Date",
-                        disabled=True
-                    )
-                    },
-                    hide_index=True,
-                    key="parent"
-                    )
-            st.session_state.ticketN = st.text_input("Enter ticket number:")
-            params = st.experimental_get_query_params()
-            if params and params['TicketID']:
-                st.session_state.ticketN = params['TicketID'][0]
-            if(st.session_state.ticketN):
-                st.experimental_rerun()
-    else:
+    st.set_page_config("Public Quote", layout="wide")
+    params = st.experimental_get_query_params()
+    if st.session_state.ticketN:
         techPage()
+    else:
+        if st.session_state.ticketN is None and params and params['TicketID']:
+            st.session_state.ticketN = params['TicketID'][0]
+            st.experimental_rerun()
+        else:
+            st.write("Please put your ticketID after .net =  /?TicketID=230524-0171")
 
 if __name__ == "__main__":
     main()
