@@ -200,7 +200,7 @@ def techPage():
             </table>
             """
 
-            st.markdown(right_column_content, unsafe_allow_html=True)
+            st.write(f"Price (Pre-Tax): ${total_price:.2f}, Estimated Sales Tax: ${total_price*taxRate/100:.2f}, Total (including tax): ${total_price_with_tax:.2f}")
 
             input_pdf = PdfReader(open('input.pdf', 'rb'))
             buffer = io.BytesIO()
@@ -408,7 +408,7 @@ def techPage():
 
             pdf_content = merged_buffer.read()
             pdf_base64 = base64.b64encode(pdf_content).decode('utf-8')
-            pdf_display = f'<embed src="data:application/pdf;base64,{pdf_base64}" width="1000" height="500" type="application/pdf">' 
+            pdf_display = f'<embed src="data:application/pdf;base64,{pdf_base64}" width="110%" height="700" type="application/pdf">' 
             st.download_button("Download PDF", merged_buffer, file_name=f'{st.session_state.ticketN}-quote.pdf', mime='application/pdf')
             st.markdown(pdf_display, unsafe_allow_html=True)
             # pdf_display = F'<iframe src="data:application/pdf;base64,{pdf_base64}" width="100%" height="1000" type="application/pdf"></iframe>'            
