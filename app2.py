@@ -143,26 +143,9 @@ def techPage():
                     if not table_df.empty and 'EXTENDED' in table_df.columns:
                         category_total = table_df['EXTENDED'].sum()
                         category_totals[category] = category_total
-                        # st.write(f"{category} Total : {category_totals[category]}")
-                    # else:
-                        # st.write(f"{category} Total : 0")
-                
-            left_column_content = """
-            *NOTE: Total (including tax) INCLUDES ESTIMATED SALES* \n*/ USE TAX*
-            """
+                        
             total_price = 0.0
             taxRate = float(st.session_state.ticketDf['Tax_Rate'])
-            # col1, col2 = st.columns([1, 1])
-            # with col1: 
-                # st.write(left_column_content)
-                # total_price = 0.0
-                # taxRate = st.number_input("Please input a tax rate in % (by 2 decimal)",
-                #                         value=float(st.session_state.ticketDf['Tax_Rate']),
-                #                         disabled=True,
-                #                         format="%.2f",
-                #                         key="tax_rate_input")
-                # incol1, incol2, incol3 = st.columns([1,1,1])     
-                
             category_table_data = []
             for category in categories:
                 table_df = getattr(st.session_state, f"{category.lower().replace(' ', '_')}_df")
@@ -180,25 +163,6 @@ def techPage():
             table_style = f"width: 100%; font-size: 18px;"
             st.markdown(f'<style>{table_style}</style>', unsafe_allow_html=True)
             st.table(transposed_category_df)
-
-            # st.dataframe(transposed_category_df, hide_index=True)
-            
-            # right_column_content = f"""
-            # <table>
-            # <tr>
-            #     <td><b>Price (Pre-Tax)</b></td>
-            #     <td>${total_price:.2f}</td>
-            # </tr>
-            # <tr>
-            #     <td><b>Estimated Sales Tax</b></td>
-            #     <td>${total_price*taxRate/100:.2f}</td>
-            # </tr>
-            # <tr>
-            #     <td><b>Total (including tax)</b></td>
-            #     <td>${total_price_with_tax:.2f}</td>
-            # </tr>
-            # </table>
-            # """
 
             # printH = f"**Price (Pre-Tax):**  ${total_price:.2f},       "
             # printM = f"**Estimated Sales Tax:**  ${total_price*taxRate/100:.2f},       "
