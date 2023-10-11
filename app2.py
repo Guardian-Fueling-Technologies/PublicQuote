@@ -191,7 +191,7 @@ def techPage():
             st.markdown(f'<style>{table_style}</style>', unsafe_allow_html=True)
             st.table(transposed_category_df)
 
-            st.dataframe(transposed_category_df, hide_index=True)
+            # st.dataframe(transposed_category_df, hide_index=True)
             st.write(right_column_content)
 
             input_pdf = PdfReader(open('input.pdf', 'rb'))
