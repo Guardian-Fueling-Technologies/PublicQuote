@@ -174,16 +174,6 @@ def techPage():
 
             total_price_with_tax = total_price * (1 + taxRate / 100.0)
 
-            right_column_content = f"""
-            **Price (Pre-Tax)**
-            ${total_price:.2f}
-
-            **Estimated Sales Tax**
-            ${total_price*taxRate/100:.2f}
-
-            **Total (including tax)**
-            ${total_price_with_tax:.2f}
-            """
             category_df = pd.DataFrame(category_table_data, columns=["Category", "Total"])
             transposed_category_df = category_df.T
 
@@ -192,7 +182,25 @@ def techPage():
             st.table(transposed_category_df)
 
             # st.dataframe(transposed_category_df, hide_index=True)
-            st.write(right_column_content)
+            
+            right_column_content = f"""
+            <table>
+            <tr>
+                <td><b>Price (Pre-Tax)</b></td>
+                <td>${total_price:.2f}</td>
+            </tr>
+            <tr>
+                <td><b>Estimated Sales Tax</b></td>
+                <td>${total_price*taxRate/100:.2f}</td>
+            </tr>
+            <tr>
+                <td><b>Total (including tax)</b></td>
+                <td>${total_price_with_tax:.2f}</td>
+            </tr>
+            </table>
+            """
+
+            st.markdown(right_column_content, unsafe_allow_html=True)
 
             input_pdf = PdfReader(open('input.pdf', 'rb'))
             buffer = io.BytesIO()
