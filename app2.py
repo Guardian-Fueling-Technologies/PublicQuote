@@ -200,11 +200,13 @@ def techPage():
             # </table>
             # """
 
-            printH = f"**Price (Pre-Tax):**  ${total_price:.2f},       "
-            printM = f"**Estimated Sales Tax:**  ${total_price*taxRate/100:.2f},       "
-            printT = f"**Total (including tax):**  ${total_price_with_tax:.2f}"
-            st.write(printH+printM+printT)
-            # st.write(f"**Price (Pre-Tax):**  ${total_price:.2f},       **Estimated Sales Tax:**  ${total_price*taxRate/100:.2f},       **Total (including tax):**  ${total_price_with_tax:.2f}")
+            # printH = f"**Price (Pre-Tax):**  ${total_price:.2f},       "
+            # printM = f"**Estimated Sales Tax:**  ${total_price*taxRate/100:.2f},       "
+            # printT = f"**Total (including tax):**  ${total_price_with_tax:.2f}"
+            # st.write(printH+printM+printT)
+            st.write(f"**Price (Pre-Tax):**  ${total_price:.2f},       **Estimated  Sales  Tax:**  ${total_price*taxRate/100:.2f},       **Total (including tax):**  ${total_price_with_tax:.2f}")
+            st.write(f"**Price (Pre-Tax):**  ${total_price:.2f},       **Estimated   Sales   Tax:**  ${total_price*taxRate/100:.2f},       **Total (including tax):**  ${total_price_with_tax:.2f}")
+            st.write(f"**Price (Pre-Tax):**  ${total_price:.2f},       **EstimatedSalesTax:**  ${total_price*taxRate/100:.2f},       **Total (including tax):**  ${total_price_with_tax:.2f}")
             
             input_pdf = PdfReader(open('input.pdf', 'rb'))
             buffer = io.BytesIO()
