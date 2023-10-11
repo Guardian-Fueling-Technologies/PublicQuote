@@ -200,8 +200,9 @@ def techPage():
             # </table>
             # """
 
-            st.write(f"**Price (Pre-Tax):** ${total_price:.2f},       **Estimated Sales Tax:** ${total_price*taxRate/100:.2f},       **Total (including tax):** ${total_price_with_tax:.2f}")
-
+            st.write(f"**Price (Pre-Tax):**  ${total_price:.2f},       **Estimated Sales Tax:**  ${total_price*taxRate/100:.2f},       **Total (including tax):** ${total_price_with_tax:.2f}")
+            st.write(f"**Price (Pre-Tax):**  ${total_price:.2f},       **Estimated Sales Tax:**  ${total_price*taxRate/100:.2f},       **Total (including tax):**  ${total_price_with_tax:2.f}")
+            
             input_pdf = PdfReader(open('input.pdf', 'rb'))
             buffer = io.BytesIO()
             c = canvas.Canvas(buffer, pagesize=letter)
