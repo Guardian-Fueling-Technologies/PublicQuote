@@ -200,7 +200,7 @@ def techPage():
             # </table>
             # """
 
-            st.write(f"<b>Price (Pre-Tax):</b> ${total_price:.2f},\t<b>Estimated Sales Tax:</b> ${total_price*taxRate/100:.2f},\t<b>Total (including tax):</b> ${total_price_with_tax:.2f}")
+            st.write(f"**Price (Pre-Tax):** ${total_price:.2f},       **Estimated Sales Tax:** ${total_price*taxRate/100:.2f},       **Total (including tax):** ${total_price_with_tax:.2f}")
 
             input_pdf = PdfReader(open('input.pdf', 'rb'))
             buffer = io.BytesIO()
