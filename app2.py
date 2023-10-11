@@ -183,24 +183,24 @@ def techPage():
 
             # st.dataframe(transposed_category_df, hide_index=True)
             
-            right_column_content = f"""
-            <table>
-            <tr>
-                <td><b>Price (Pre-Tax)</b></td>
-                <td>${total_price:.2f}</td>
-            </tr>
-            <tr>
-                <td><b>Estimated Sales Tax</b></td>
-                <td>${total_price*taxRate/100:.2f}</td>
-            </tr>
-            <tr>
-                <td><b>Total (including tax)</b></td>
-                <td>${total_price_with_tax:.2f}</td>
-            </tr>
-            </table>
-            """
+            # right_column_content = f"""
+            # <table>
+            # <tr>
+            #     <td><b>Price (Pre-Tax)</b></td>
+            #     <td>${total_price:.2f}</td>
+            # </tr>
+            # <tr>
+            #     <td><b>Estimated Sales Tax</b></td>
+            #     <td>${total_price*taxRate/100:.2f}</td>
+            # </tr>
+            # <tr>
+            #     <td><b>Total (including tax)</b></td>
+            #     <td>${total_price_with_tax:.2f}</td>
+            # </tr>
+            # </table>
+            # """
 
-            st.write(f"Price (Pre-Tax): ${total_price:.2f}, Estimated Sales Tax: ${total_price*taxRate/100:.2f}, Total (including tax): ${total_price_with_tax:.2f}")
+            st.write(f"<b>Price (Pre-Tax):</b> ${total_price:.2f},\t<b>Estimated Sales Tax:</b> ${total_price*taxRate/100:.2f},\t<b>Total (including tax):</b> ${total_price_with_tax:.2f}")
 
             input_pdf = PdfReader(open('input.pdf', 'rb'))
             buffer = io.BytesIO()
@@ -408,7 +408,7 @@ def techPage():
 
             pdf_content = merged_buffer.read()
             pdf_base64 = base64.b64encode(pdf_content).decode('utf-8')
-            pdf_display = f'<embed src="data:application/pdf;base64,{pdf_base64}" width="110%" height="700" type="application/pdf">' 
+            pdf_display = f'<embed src="data:application/pdf;base64,{pdf_base64}" width="100%" height="700" type="application/pdf">' 
             st.download_button("Download PDF", merged_buffer, file_name=f'{st.session_state.ticketN}-quote.pdf', mime='application/pdf')
             st.markdown(pdf_display, unsafe_allow_html=True)
             # pdf_display = F'<iframe src="data:application/pdf;base64,{pdf_base64}" width="100%" height="1000" type="application/pdf"></iframe>'            
