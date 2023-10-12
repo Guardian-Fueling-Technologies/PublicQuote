@@ -204,7 +204,7 @@ def techPage():
             text_box_height = 100
             
             incurred_text = str(st.session_state.workDesDf["Incurred"].get(0))
-            proposed_text = ", "+str(st.session_state.workDesDf["Proposed"].get(0))
+            proposed_text = str(st.session_state.workDesDf["Proposed"].get(0))
             general_description = incurred_text + proposed_text
 
             # if len(general_description) > 4500:
