@@ -207,16 +207,14 @@ def techPage():
             proposed_text = ", "+str(st.session_state.workDesDf["Proposed"].get(0))
             general_description = incurred_text + proposed_text
 
-            if len(general_description) > 4500:
-                if len(incurred_text) > 2500:
-                    incurred_text = str(st.session_state.workDesDf["Incurred"].get(0))[:2500] + " ... max of 2500 chars"
-                if len(proposed_text) > 2000:
-                    proposed_text = str(st.session_state.workDesDf["Proposed"].get(0))[:2000] + " ... max of 2000 chars"
+            # if len(general_description) > 4500:
+            #     if len(incurred_text) > 2500:
+            #         incurred_text = str(st.session_state.workDesDf["Incurred"].get(0))[:2500] + " ... max of 2500 chars"
+            #     if len(proposed_text) > 2000:
+            #         proposed_text = str(st.session_state.workDesDf["Proposed"].get(0))[:2000] + " ... max of 2000 chars"
             
             general_description = (
-                incurred_text
-                + "<br/><br/>"
-                + proposed_text
+                incurred_text + ", " + proposed_text
             )
             
             styles = getSampleStyleSheet()
