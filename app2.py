@@ -164,8 +164,9 @@ def techPage():
             st.markdown(f'<style>{table_style}</style>', unsafe_allow_html=True)
             st.table(transposed_category_df)
 
-            right_column_content = f"""**Price&nbsp;(Pre-Tax):**&nbsp;${total_price:.2f},&nbsp;&nbsp;&nbsp;**Estimated&nbsp;Sales&nbsp;Tax:**&nbsp;${total_price*taxRate/100:.2f}&nbsp;&nbsp;&nbsp;**Total&nbsp;(including tax):**&nbsp;${total_price_with_tax:.2f}"""
-            st.write(right_column_content)
+            right_column_content = f"""<strong>Price (Pre-Tax):</strong> ${total_price:.2f}, <strong>Estimated Sales Tax:</strong> ${total_price * taxRate / 100:.2f}, <strong>Total (including tax):</strong> ${total_price_with_tax:.2f}"""
+            st.write(right_column_content, unsafe_allow_html=True)
+
             input_pdf = PdfReader(open('input.pdf', 'rb'))
             buffer = io.BytesIO()
             c = canvas.Canvas(buffer, pagesize=letter)
