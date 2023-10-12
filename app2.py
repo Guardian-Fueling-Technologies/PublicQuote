@@ -157,20 +157,20 @@ def techPage():
 
             total_price_with_tax = total_price * (1 + taxRate / 100.0)
 
-            category_df = pd.DataFrame(category_table_data, columns=["Category", "Total"])
-            transposed_category_df = category_df.T
+            # category_df = pd.DataFrame(category_table_data, columns=["Category", "Total"])
+            # transposed_category_df = category_df.T
 
-            table_style = f"width: 100%; font-size: 18px;"
-            st.markdown(f'<style>{table_style}</style>', unsafe_allow_html=True)
-            st.table(transposed_category_df)
+            # table_style = f"width: 100%; font-size: 18px;"
+            # st.markdown(f'<style>{table_style}</style>', unsafe_allow_html=True)
+            # st.table(transposed_category_df)
 
             printH = f"**Price (Pre-Tax):**  ${total_price:.2f},       "
             printM = f"**Estimated Sales Tax:**  ${total_price*taxRate/100:.2f},       "
-            printT = f"**Total (including tax):**  ${total_price_with_tax:.2f}"
+            printT = f"**Total (including Est. tax):**  ${total_price_with_tax:.2f}"
             col1, col2, col3 = st.columns(3)
-            col1.write(printH)
-            col2.write(printM)
-            col3.write(printT)
+            col1.write("# " + printH)
+            col2.write("# " + printM)
+            col3.write("# " + printT)
 
             input_pdf = PdfReader(open('input.pdf', 'rb'))
             buffer = io.BytesIO()
@@ -203,8 +203,8 @@ def techPage():
             text_box_width = 560
             text_box_height = 100
             
-            incurred_text = "Incurred Workdescription: "+str(st.session_state.workDesDf["Incurred"].get(0))
-            proposed_text = "Proposed Workdescription: "+str(st.session_state.workDesDf["Proposed"].get(0))
+            incurred_text = str(st.session_state.workDesDf["Incurred"].get(0))
+            proposed_text = ", "+str(st.session_state.workDesDf["Proposed"].get(0))
             general_description = incurred_text + proposed_text
 
             if len(general_description) > 4500:
