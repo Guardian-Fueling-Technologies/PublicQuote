@@ -2,6 +2,7 @@ import streamlit as st
 import pandas as pd
 import requests
 from PIL import Image
+import fitz
 import io
 import base64
 import random
@@ -164,9 +165,9 @@ def techPage():
             # st.markdown(f'<style>{table_style}</style>', unsafe_allow_html=True)
             # st.table(transposed_category_df)
 
-            printH = f"### **Price (Pre-Tax):**  \n### **${318.25:.2f}**"
-            printM = f"### **Estimated Sales Tax:**  \n### **${23.87:.2f}**"
-            printT = f"### **Total (including Est. tax):**  \n### **${342.12:.2f}**"
+            printH = f"##### **Price (Pre-Tax):**  \n##### **${total_price:.2f}**"
+            printM = f"##### **Estimated Sales Tax:**  \n##### **${total_price*taxRate/100:.2f}**"
+            printT = f"##### **Total (including Est. tax):**  \n##### **${total_price_with_tax:.2f}**"
             col1, col2, col3 = st.columns(3)
             col1.write(printH)
             col2.write(printM)
@@ -376,9 +377,18 @@ def techPage():
 
             pdf_content = merged_buffer.read()
             pdf_base64 = base64.b64encode(pdf_content).decode('utf-8')
-            pdf_display = f'<embed src="data:application/pdf;base64,{pdf_base64}" width="100%" height="700" type="application/pdf">' 
-            st.download_button("Download PDF", merged_buffer, file_name=f'{st.session_state.ticketN}-quote.pdf', mime='application/pdf')
-            st.markdown(pdf_display, unsafe_allow_html=True)
+            pdf_document = fitz.open(pdf_base64)
+            dpi = 600
+            for page_number in range(len(pdf_document)):
+                page = pdf_document.load_page(page_number)
+                img = page.get_pixmap(matrix=fitz.Matrix(dpi / 72, dpi / 72))
+                pil_img = Image.frombytes("RGB", [img.width, img.height], img.samples)
+                st.image(pil_img, caption=f"Page {page_number + 1}", use_column_width="always")
+            pdf_document.close()
+
+            # pdf_display = f'<embed src="data:application/pdf;base64,{pdf_base64}" width="100%" height="700" type="application/pdf">' 
+            # st.download_button("Download PDF", merged_buffer, file_name=f'{st.session_state.ticketN}-quote.pdf', mime='application/pdf')
+            # st.markdown(pdf_display, unsafe_allow_html=True)
             # pdf_display = F'<iframe src="data:application/pdf;base64,{pdf_base64}" width="100%" height="1000" type="application/pdf"></iframe>'            
             # st.markdown(pdf_display, unsafe_allow_html=True)
             # st.write(pdf_display, unsafe_allow_html=True)
