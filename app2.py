@@ -377,7 +377,8 @@ def techPage():
 
             pdf_content = merged_buffer.read()
             pdf_base64 = base64.b64encode(pdf_content).decode('utf-8')
-            pdf_document = fitz.open(pdf_base64)
+            pdf_stream = io.BytesIO(pdf_base64 = base64)
+            pdf_document = fitz.open(stream=pdf_stream, filetype="pdf")
             dpi = 600
             for page_number in range(len(pdf_document)):
                 page = pdf_document.load_page(page_number)
