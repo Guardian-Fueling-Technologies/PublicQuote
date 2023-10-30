@@ -165,14 +165,14 @@ def techPage():
             # st.markdown(f'<style>{table_style}</style>', unsafe_allow_html=True)
             # st.table(transposed_category_df)
 
-            printH = f"##### **Price (Pre-Tax):**  \n##### **${total_price:.2f}**"
-            printM = f"##### **Estimated Sales Tax:**  \n##### **${total_price*taxRate/100:.2f}**"
-            printT = f"##### **Total (including Est. tax):**  \n##### **${total_price_with_tax:.2f}**"
+            printH = f"**Price (Pre-Tax):${total_price:.2f}**"
+            printM = f"**Estimated Sales Tax:${total_price*taxRate/100:.2f}**"
+            printT = f"**Total (including Est. tax):${total_price_with_tax:.2f}**"
             col1, col2, col3 = st.columns(3)
             col1.write(printH)
             col2.write(printM)
             col3.write(printT)
-
+            
             input_pdf = PdfReader(open('input.pdf', 'rb'))
             buffer = io.BytesIO()
             c = canvas.Canvas(buffer, pagesize=letter)
@@ -381,11 +381,12 @@ def techPage():
             pdf_stream = io.BytesIO(pdf_bytes) 
             pdf_document = fitz.open(stream=pdf_stream, filetype="pdf")
             dpi = 600
+            col1, col2 = st.columns([10,1])
             for page_number in range(len(pdf_document)):
                 page = pdf_document.load_page(page_number)
                 img = page.get_pixmap(matrix=fitz.Matrix(dpi / 72, dpi / 72))
                 pil_img = Image.frombytes("RGB", [img.width, img.height], img.samples)
-                st.image(pil_img, caption=f"Page {page_number + 1}", use_column_width="always")
+                col1.image(pil_img, caption=f"Page {page_number + 1}", use_column_width="always")
             pdf_document.close()
 
             # pdf_display = f'<embed src="data:application/pdf;base64,{pdf_base64}" width="100%" height="700" type="application/pdf">' 
