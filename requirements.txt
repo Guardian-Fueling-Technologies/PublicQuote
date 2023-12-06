@@ -78,7 +78,7 @@ statsmodels==0.14.0
 streamlit==1.23.1
 streamlit-autorefresh==0.0.1
 streamlit-modal==0.1.0
-streamlit-aggrid==0.3.0
+streamlit-aggrid==0.3.4
 tenacity==8.2.2
 toml==0.10.2
 toolz==0.12.0
