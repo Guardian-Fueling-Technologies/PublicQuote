@@ -10,7 +10,35 @@ password = os.environ.get("passwordGFT")
 SQLaddress = os.environ.get("addressGFT")
 
 parameter_value = "230524-0173"
+def inventory_Part(input):
+    conn_str = f"DRIVER={SQLaddress};SERVER={server};DATABASE={database};UID={username};PWD={password};TrustServerCertificate=yes;"
+    conn = pyodbc.connect(conn_str)
+    cursor = conn.cursor()
 
+    sql_query = f"""EXEC [CF_PART_LOOK_UP] '%{input}%';"""
+    cursor.execute(sql_query)
+    sql_query = cursor.fetchall()
+    # print("part", sql_query)
+    rows_transposed = [sql_query for sql_query in zip(*sql_query)]
+    partNameDf = pd.DataFrame(dict(zip(['ITEMNMBR', 'ITEMDESC', "QTY_AVAILABLE"], rows_transposed)))
+    cursor.close()
+    conn.close()
+    return partNameDf
+
+def inventory_Item(input):
+    conn_str = f"DRIVER={SQLaddress};SERVER={server};DATABASE={database};UID={username};PWD={password};TrustServerCertificate=yes;"
+    conn = pyodbc.connect(conn_str)
+    cursor = conn.cursor()
+
+    sql_query = f"""EXEC [CF_PART_Search] '{input}';"""
+    cursor.execute(sql_query)
+    sql_query = cursor.fetchall()
+    # print("item", sql_query)
+    rows_transposed = [sql_query for sql_query in zip(*sql_query)]
+    partNameDf = pd.DataFrame(dict(zip(['ITEMNMBR', 'ITEMDESC', "Location","QTY_AVAILABLE"], rows_transposed)))
+    cursor.close()
+    conn.close()
+    return partNameDf
 def getBinddes(input):
     
     conn_str = f"DRIVER={SQLaddress};SERVER={server};DATABASE={database};UID={username};PWD={password};TrustServerCertificate=yes;"
