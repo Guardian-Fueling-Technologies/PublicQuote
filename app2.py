@@ -412,8 +412,6 @@ def techPage():
 def inventoryPage():
     if st.session_state.selected_rows is None or len(st.session_state.selected_rows)==0:
         st.session_state.parts_df = pd.DataFrame()
-        width = 800
-        inwidth = 500
         # st.session_state.input_letters = st.session_state.ticketN[1:]
         st.session_state.input_letters = st.text_input("First enter Part Id or Parts Desc:", max_chars=15, key="ItemDES").upper()
         # st.write(st.session_state.input_letters)
@@ -435,7 +433,7 @@ def inventoryPage():
                         enable_enterprise_modules=True,
                         allow_unsafe_jscode=True,
                         update_mode=GridUpdateMode.SELECTION_CHANGED,
-                        columns_auto_size_mode=ColumnsAutoSizeMode.FIT_CONTENTS)
+                        columns_auto_size_mode=ColumnsAutoSizeMode.FIT_ALL_COLUMNS_TO_VIEW)
             st.session_state.selected_rows = data["selected_rows"]
             if len(st.session_state.selected_rows) != 0:
                 st.table(st.session_state.selected_rows)
@@ -445,7 +443,17 @@ def inventoryPage():
             # st.table(st.session_state.selected_rows)
             st.session_state.partsDF = inventory_Item(st.session_state.selected_rows[0]["ITEMNMBR"])
             st.session_state.partsDF['QTY_AVAILABLE'] = st.session_state.partsDF['QTY_AVAILABLE'].apply(lambda x: f'{x:,.2f}' if isinstance(x, (int, float)) else str(x))
-            st.table(st.session_state.partsDF)
+            
+            gb = GridOptionsBuilder.from_dataframe(st.session_state.partsDF)
+            gb.configure_side_bar()
+            gridOptions = gb.build()
+
+            data = AgGrid(st.session_state.partsDF,
+                        gridOptions=gridOptions,
+                        enable_enterprise_modules=True,
+                        allow_unsafe_jscode=True,
+                        update_mode=GridUpdateMode.SELECTION_CHANGED,
+                        columns_auto_size_mode=ColumnsAutoSizeMode.FIT_ALL_COLUMNS_TO_VIEW)
     # st.write("Search by the Item Number")
     # st.session_state.inputParts = st.text_input("Second enter ITEM Number:", max_chars=15, key="itemID").upper()
     # if st.session_state.inputParts != st.session_state.previnputParts and len(st.session_state.input_letters) > 0:
