@@ -413,7 +413,7 @@ def inventoryPage():
     if st.session_state.selected_rows is None or len(st.session_state.selected_rows)==0:
         st.session_state.parts_df = pd.DataFrame()
         # st.session_state.input_letters = st.session_state.ticketN[1:]
-        st.session_state.input_letters = st.text_input("First enter Part Id or Parts Desc:", max_chars=15, key="ItemDES").upper()
+        st.session_state.input_letters = st.text_input("First enter Part Id or Parts Desc:", max_chars=50, key="ItemDES").upper()
         # st.write(st.session_state.input_letters)
         if st.session_state.input_letters != st.session_state.prev_input_letters and len(st.session_state.input_letters) > 0:
             st.session_state.pricingDf = inventory_Part(st.session_state.input_letters)
@@ -423,7 +423,7 @@ def inventoryPage():
         elif st.session_state.pricingDf is not None:
             df = pd.DataFrame(st.session_state.pricingDf)
 
-            gb = GridOptionsBuilder.from_dataframe(df[["ITEMNMBR", "ITEMDESC", "QTY_AVAILABLE"]])
+            gb = GridOptionsBuilder.from_dataframe(df[["ITEMNMBR", "QTY_AVAILABLE", "ITEMDESC"]])
             gb.configure_selection(selection_mode="single")
             gb.configure_side_bar()
             gridOptions = gb.build()
@@ -433,7 +433,7 @@ def inventoryPage():
                         enable_enterprise_modules=True,
                         allow_unsafe_jscode=True,
                         update_mode=GridUpdateMode.SELECTION_CHANGED,
-                        columns_auto_size_mode=ColumnsAutoSizeMode.FIT_ALL_COLUMNS_TO_VIEW)
+                        columns_auto_size_mode=ColumnsAutoSizeMode.FIT_CONTENTS)
             st.session_state.selected_rows = data["selected_rows"]
             if len(st.session_state.selected_rows) != 0:
                 st.table(st.session_state.selected_rows)
@@ -442,18 +442,23 @@ def inventoryPage():
         if len(st.session_state.selected_rows) != 0:
             # st.table(st.session_state.selected_rows)
             st.session_state.partsDF = inventory_Item(st.session_state.selected_rows[0]["ITEMNMBR"])
-            st.session_state.partsDF['QTY_AVAILABLE'] = st.session_state.partsDF['QTY_AVAILABLE'].apply(lambda x: f'{x:,.2f}' if isinstance(x, (int, float)) else str(x))
             
-            gb = GridOptionsBuilder.from_dataframe(st.session_state.partsDF)
-            gb.configure_side_bar()
-            gridOptions = gb.build()
+            if(len(st.session_state.partsDF) == 0):
+                st.write("no parts")
+            else:
+                st.session_state.partsDF = st.session_state.partsDF.drop('ITEMDESC', axis=1)
+                st.session_state.partsDF['QTY_AVAILABLE'] = st.session_state.partsDF['QTY_AVAILABLE'].apply(lambda x: f'{x:,.2f}' if isinstance(x, (int, float)) else str(x))
+            
+                gb = GridOptionsBuilder.from_dataframe(st.session_state.partsDF)
+                gb.configure_side_bar()
+                gridOptions = gb.build()
 
-            data = AgGrid(st.session_state.partsDF,
-                        gridOptions=gridOptions,
-                        enable_enterprise_modules=True,
-                        allow_unsafe_jscode=True,
-                        update_mode=GridUpdateMode.SELECTION_CHANGED,
-                        columns_auto_size_mode=ColumnsAutoSizeMode.FIT_ALL_COLUMNS_TO_VIEW)
+                data = AgGrid(st.session_state.partsDF,
+                            gridOptions=gridOptions,
+                            enable_enterprise_modules=True,
+                            allow_unsafe_jscode=True,
+                            update_mode=GridUpdateMode.SELECTION_CHANGED,
+                            columns_auto_size_mode=ColumnsAutoSizeMode.FIT_CONTENTS)
     # st.write("Search by the Item Number")
     # st.session_state.inputParts = st.text_input("Second enter ITEM Number:", max_chars=15, key="itemID").upper()
     # if st.session_state.inputParts != st.session_state.previnputParts and len(st.session_state.input_letters) > 0:
