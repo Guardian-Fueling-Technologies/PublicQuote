@@ -423,7 +423,7 @@ def inventoryPage():
         elif st.session_state.pricingDf is not None:
             df = pd.DataFrame(st.session_state.pricingDf)
 
-            gb = GridOptionsBuilder.from_dataframe(df[["ITEMNMBR", "QTY_AVAILABLE", "ITEMDESC"]])
+            gb = GridOptionsBuilder.from_dataframe(df[["ITEMNMBR", "ITEMDESC", "QTY"]])
             gb.configure_selection(selection_mode="single")
             gb.configure_side_bar()
             gridOptions = gb.build()
@@ -444,16 +444,17 @@ def inventoryPage():
             st.session_state.partsDF = inventory_Item(st.session_state.selected_rows[0]["ITEMNMBR"])
             
             if(len(st.session_state.partsDF) == 0):
-                st.write("no parts")
+                st.write("no parts available/ contact parts department")
             else:
-                st.session_state.partsDF = st.session_state.partsDF.drop('ITEMDESC', axis=1)
-                st.session_state.partsDF['QTY_AVAILABLE'] = st.session_state.partsDF['QTY_AVAILABLE'].apply(lambda x: f'{x:,.2f}' if isinstance(x, (int, float)) else str(x))
+                df = st.session_state.partsDF.drop('ITEMDESC', axis=1)
+                # st.session_state.partsDF['QTY'] = st.session_state.partsDF['QTY'].apply(lambda x: f'{x:,.2f}' if isinstance(x, (int, float)) else str(x))
             
-                gb = GridOptionsBuilder.from_dataframe(st.session_state.partsDF)
+                gb = GridOptionsBuilder.from_dataframe(df[["ITEMNMBR", "QTY", "Location"]])
+                gb.configure_selection(selection_mode="single")
                 gb.configure_side_bar()
                 gridOptions = gb.build()
 
-                data = AgGrid(st.session_state.partsDF,
+                data = AgGrid(df,
                             gridOptions=gridOptions,
                             enable_enterprise_modules=True,
                             allow_unsafe_jscode=True,
@@ -468,7 +469,7 @@ def inventoryPage():
     #     st.error("Please enter a valid Part Desc.")
     # elif st.session_state.partsDF is not None:
     #     with st.expander("Item Description", expanded=True):
-    #         st.session_state.partsDF['QTY_AVAILABLE'] = st.session_state.partsDF['QTY_AVAILABLE'].apply(lambda x: f'{x:,.2f}' if isinstance(x, (int, float)) else str(x))
+    #         st.session_state.partsDF['QTY'] = st.session_state.partsDF['QTY'].apply(lambda x: f'{x:,.2f}' if isinstance(x, (int, float)) else str(x))
     #         st.table(st.session_state.partsDF)
 
 def main():
