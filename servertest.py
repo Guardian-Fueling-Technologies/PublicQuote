@@ -35,7 +35,7 @@ def inventory_Item(input):
     sql_query = cursor.fetchall()
     # print("item", sql_query)
     rows_transposed = [sql_query for sql_query in zip(*sql_query)]
-    partNameDf = pd.DataFrame(dict(zip(['ITEMNMBR', 'ITEMDESC', "Location","QTY_AVAILABLE"], rows_transposed)))
+    partNameDf = pd.DataFrame(dict(zip(['ITEMNMBR',"QTY_AVAILABLE", 'ITEMDESC', "Location"], rows_transposed)))
     cursor.close()
     conn.close()
     return partNameDf
