@@ -1,2 +1,1 @@
-# UniversalQuoteTemplate
-cutie cutie test
+inventory
