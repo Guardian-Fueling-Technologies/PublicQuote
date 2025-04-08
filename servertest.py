@@ -10,9 +10,7 @@ username = os.environ.get("usernameTKLGFT")
 password = os.environ.get("passwordTKLGFT")
 SQLaddress = os.environ.get("addressGFT")
 
-print(username, password)
 parameter_value = "230524-0173"
-
 
 SQL_INJECTION_PATTERNS = re.compile(
     r"""(?ix)           # Case-insensitive, verbose
@@ -48,6 +46,9 @@ def getBinddes(input):
     conn = None
     cursor = None
     try:
+        # Validate input format, month range, and date range
+        # First validate basic format and length
+            
         input = sanitize_input(input)
         conn_str = f"DRIVER={SQLaddress};SERVER={server};DATABASE={database};UID={username};PWD={password};TrustServerCertificate=yes;"
         conn = pyodbc.connect(conn_str)
@@ -110,8 +111,11 @@ def getPartsPrice(partInfoDf):
 def getAllPrice(ticketN):
     conn = None
     cursor = None
+    if re.match(r'^\d{2}(0[1-9]|1[0-2])(0[1-9]|[12][0-9]|3[01])-\d{4}$', ticketN):
+            print("✅ Valid ticket ID format")
+    else:
+        raise TypeError(f"Invalid ticket ID format")
     try:
-        ticketN = sanitize_input(ticketN)
         conn_str = f"DRIVER={SQLaddress};SERVER={server};DATABASE={database};UID={username};PWD={password};TrustServerCertificate=yes;"
         conn = pyodbc.connect(conn_str)
         cursor = conn.cursor()
