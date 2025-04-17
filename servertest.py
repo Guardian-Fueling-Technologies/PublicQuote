@@ -112,7 +112,7 @@ def getAllPrice(ticketN):
     conn = None
     cursor = None
     if re.match(r'^\d{2}(0[1-9]|1[0-2])(0[1-9]|[12][0-9]|3[01])-\d{4}$', ticketN):
-            print("✅ Valid ticket ID format")
+        print("✅ Valid ticket ID format")
     else:
         raise TypeError(f"Invalid ticket ID format")
     try:
