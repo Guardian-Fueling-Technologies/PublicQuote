@@ -40,7 +40,7 @@ def sanitize_input(value):
         return value
 
     else:
-        raise TypeError(f"Unsupported input type for SQL sanitization: {type(value)}")
+        raise ValueError(f"Unsupported input type for SQL sanitization: {type(value)}")
 
 def getBinddes(input):
     conn = None
@@ -111,10 +111,15 @@ def getPartsPrice(partInfoDf):
 def getAllPrice(ticketN):
     conn = None
     cursor = None
-    if re.match(r'^\d{2}(0[1-9]|1[0-2])(0[1-9]|[12][0-9]|3[01])-\d{4}$', ticketN):
-        print("✅ Valid ticket ID format")
-    else:
-        raise TypeError(f"Invalid ticket ID format")
+
+    # yymmdd - d{4}
+    # yymmdd <= currentdate 
+    # max of ticket num temp no set up 2000
+    # First validate input is safe
+    if not sanitize_input(ticketN):
+        raise ValueError("Invalid characters in ticket ID")
+
+    # Then validate format
     try:
         conn_str = f"DRIVER={SQLaddress};SERVER={server};DATABASE={database};UID={username};PWD={password};TrustServerCertificate=yes;"
         conn = pyodbc.connect(conn_str)
