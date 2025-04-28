@@ -56,8 +56,6 @@ def notify_it_on_error(ip_address, user_input):
         to_numbers = json.loads(to_numbers)
         print(to_numbers)
 
-
-
         # Send SMS to each recipient
         for to_number in to_numbers:
             message = client.messages.create(
@@ -121,9 +119,12 @@ def techPage():
         if st.session_state.ticketDf is None:
             # st.session_state.refresh_button = False
             try:
-                if not re.match(r'^\d{2}(0[1-9]|1[0-2])(0[1-9]|[12][0-9]|3[01])-\d{4}$', st.session_state.ticketDf):
+                if re.match(r'^\d{2}(0[1-9]|1[0-2])(0[1-9]|[12][0-9]|3[01])-\d{4}$', st.session_state.ticketN):
+                    st.session_state.ticketDf, st.session_state.LRatesDf, st.session_state.TRatesDf, st.session_state.misc_ops_df = getAllPrice(st.session_state.ticketN)
+                else:
                     st.error("Invalid ticket ID format - must be YYMMDD-NNNN")
-                st.session_state.ticketDf, st.session_state.LRatesDf, st.session_state.TRatesDf, st.session_state.misc_ops_df = getAllPrice(st.session_state.ticketN)
+                    return
+
             except ValueError as ve:
                 st.error("Invalid characters in ticket ID")
                 notify_it_on_error(f"Invalid characters in ticket ID: {st.session_state.ticketN}", st.session_state.ticketN)
