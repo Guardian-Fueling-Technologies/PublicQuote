@@ -31,7 +31,44 @@ from reportlab.graphics.renderPM import PMCanvas
 from decimal import Decimal
 from reportlab.pdfbase.pdfmetrics import registerFont
 from reportlab.pdfbase.ttfonts import TTFont
+import json
 registerFont(TTFont('Arial','arial.ttf'))
+from twilio.rest import Client
+import os
+# ["+19046767222","+13213770708"]
+
+def notify_it_on_error(ip_address, user_input):
+    try:
+        # Get Twilio credentials from environment variables
+        account_sid = os.environ.get("account_sid")
+        auth_token = os.environ.get("auth_token")
+        from_number = os.environ.get("twilio_from") 
+        to_numbers = os.environ.get("twilio_to")
+
+        client = Client(account_sid, auth_token)
+
+        message_body = (
+            f"⚠️ Ticket Number Input Failed.\n"
+            f"IP: {ip_address}\n"
+            f"Input: {user_input}\n"
+            f"Time: {datetime.now().strftime('%Y-%m-%d %H:%M:%S')}"
+        )
+        to_numbers = json.loads(to_numbers)
+        print(to_numbers)
+
+
+
+        # Send SMS to each recipient
+        for to_number in to_numbers:
+            message = client.messages.create(
+                body=message_body,
+                from_=from_number,
+                to=to_number
+            )
+            print(f"SMS sent to {to_number}")
+
+    except Exception as sms_error:
+        print(f"SMS failed to send: {sms_error}")
 
 current_date = datetime.now()
 formatted_date = current_date.strftime("%m/%d/%Y")
@@ -83,18 +120,42 @@ def techPage():
     if 'ticketN' in st.session_state and st.session_state.ticketN:
         if st.session_state.ticketDf is None:
             # st.session_state.refresh_button = False
-            st.session_state.ticketDf, st.session_state.LRatesDf, st.session_state.TRatesDf, st.session_state.misc_ops_df= getAllPrice(st.session_state.ticketN)
-            workDes = getDesc(ticket=st.session_state.ticketN)
+            try:
+                if not re.match(r'^\d{2}(0[1-9]|1[0-2])(0[1-9]|[12][0-9]|3[01])-\d{4}$', st.session_state.ticketDf):
+                    st.error("Invalid ticket ID format - must be YYMMDD-NNNN")
+                st.session_state.ticketDf, st.session_state.LRatesDf, st.session_state.TRatesDf, st.session_state.misc_ops_df = getAllPrice(st.session_state.ticketN)
+            except ValueError as ve:
+                st.error("Invalid characters in ticket ID")
+                notify_it_on_error(f"Invalid characters in ticket ID: {st.session_state.ticketN}", st.session_state.ticketN)
+                return
+            except Exception as e:
+                st.error("Failed to retrieve ticket data. Please try again later.")
+                return
+            try:
+                workDes = getDesc(ticket=st.session_state.ticketN)
+            except Exception as e:
+                st.error("Unable to load work description at this time.")
+                return
             if workDes is None or workDes.empty:
                 st.session_state.workDescription = "Please input"
                 st.session_state.workDesDf = pd.DataFrame({"TicketID":[st.session_state.ticketN], "Incurred":[st.session_state.workDescription], "Proposed":[st.session_state.workDescription]})
             else:
                 st.session_state.workDesDf = workDes
-            st.session_state.labor_df, st.session_state.trip_charge_df, st.session_state.parts_df, st.session_state.miscellaneous_charges_df, st.session_state.materials_and_rentals_df, st.session_state.subcontractor_df = getAllTicket(ticket=st.session_state.ticketN)
+            try:
+                st.session_state.labor_df, st.session_state.trip_charge_df, st.session_state.parts_df, \
+                st.session_state.miscellaneous_charges_df, st.session_state.materials_and_rentals_df, \
+                st.session_state.subcontractor_df = getAllTicket(ticket=st.session_state.ticketN)
+            except Exception as e:
+                st.error("Unable to load detailed ticket charges.")
+                return    
         if len(st.session_state.ticketDf)==0:
             st.error("Please enter a ticket number or check the ticket number again")
         else:
-            parentDf = getParentByTicket(st.session_state.ticketN)
+            try:
+                parentDf = getParentByTicket(st.session_state.ticketN)
+            except Exception:
+                st.error("Unable to load approval info. Please contact support.")
+                return
             if parentDf["NTE_QUOTE"].get(0) is not None and int(parentDf["NTE_QUOTE"].get(0)) == 1:
                 st.session_state.NTE_Quote = "QUOTE"
             else:
