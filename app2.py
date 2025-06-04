@@ -10,20 +10,14 @@ import time
 from io import BytesIO
 from reportlab.lib.pagesizes import letter
 from servertest import getAllPrice
-from servertest import updateAll
 from servertest import getAllTicket
 from servertest import getDesc
-from servertest import getBinddes
-from servertest import getPartsPrice
-from servertest import getBranch
-from servertest import getParent
-from servertest import updateParent
 from servertest import getParentByTicket
 from datetime import datetime
 from reportlab.pdfgen import canvas
 from PyPDF2 import PdfReader, PdfWriter
 from reportlab.lib.styles import ParagraphStyle, getSampleStyleSheet
-from reportlab.lib import colors
+from reportlab.lib.colors import red, black 
 from reportlab.platypus import Paragraph
 import numpy as np
 import re
@@ -230,10 +224,13 @@ def techPage():
             printH = f"**Price (Pre-Tax):${total_price:.2f}**"
             printM = f"**Estimated Sales Tax:${total_price*taxRate/100:.2f}**"
             printT = f"**Total (including Est. tax):${total_price_with_tax:.2f}**"
-            col1, col2, col3 = st.columns(3)
+            printK = f'**NTE:${st.session_state.ticketDf["NTE"][0]:.2f}**'
+
+            col1, col2, col3, col4 = st.columns(4)
             col1.write(printH)
             col2.write(printM)
             col3.write(printT)
+            col4.write(printK)
             
             input_pdf = PdfReader(open('input.pdf', 'rb'))
             buffer = io.BytesIO()
@@ -244,6 +241,33 @@ def techPage():
             c.drawString(25, 655.55, str(st.session_state.ticketDf['CUST_ADDRESS2'].values[0]) + " " + str(st.session_state.ticketDf['CUST_ADDRESS3'].values[0]) + " " +
                         str(st.session_state.ticketDf['CUST_CITY'].values[0]) + " " + str(st.session_state.ticketDf['CUST_Zip'].values[0]))
             
+            if st.session_state.ticketDf["NTE"][0] != 0 and total_price_with_tax > st.session_state.ticketDf["NTE"][0]:
+                    # Define box dimensions and position (adjust as needed)
+                box_width = 200
+                box_height = 50
+                box_x = (letter[0] - box_width) *3 / 4 # Center horizontally
+                box_y = 720 # Adjust vertical position
+
+                # Draw the rectangle (box)
+                c.setStrokeColor(red) # Border color
+                c.setFillColor(red)   # Fill color (optional, can be white or transparent)
+                c.rect(box_x, box_y, box_width, box_height, stroke=1, fill=0) # stroke=1 for border, fill=0 for no fill
+
+                # Draw the "NTE EXCEEDED" text
+                text_content = "NTE EXCEEDED"
+                text_font_size = 24 # Large font size
+                c.setFont("Helvetica-Bold", text_font_size) # Use a bold font and large size
+                c.setFillColor(red) # Text color
+
+                # Calculate text position to center it in the box
+                text_width = c.stringWidth(text_content, "Helvetica-Bold", text_font_size)
+                text_x = box_x + (box_width - text_width) / 2
+                text_y = box_y + (box_height - text_font_size) / 2 # Simple vertical centering
+
+                c.drawString(text_x, text_y, text_content)
+            c.setFont("Arial", 9)
+            c.setStrokeColor(black) # Border color
+            c.setFillColor(black) 
             c.drawString(50, 582, str(st.session_state.ticketDf['LOC_LOCATNNM'].values[0]))
             c.drawString(50, 572, st.session_state.ticketDf['LOC_Address'].values[0] + " " + st.session_state.ticketDf['CITY'].values[0] + " " + 
                 st.session_state.ticketDf['STATE'].values[0]+ " " + st.session_state.ticketDf['ZIP'].values[0])
@@ -460,12 +484,12 @@ def techPage():
 
 def main():
     st.set_page_config("Public Quote", layout="wide")
-    params = st.experimental_get_query_params()
+    params = st.query_params.to_dict()
     if st.session_state.ticketN:
         techPage()
     else:
-        if st.session_state.ticketN is None and params and params['TicketID']:
-            st.session_state.ticketN = params['TicketID'][0]
+        if st.session_state.ticketN is None and params:
+            st.session_state.ticketN = params["TicketID"]
             st.rerun()
         else:
             st.write("Please put your ticketID after .net =  /?TicketID=230524-0171")

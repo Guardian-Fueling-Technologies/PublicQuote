@@ -4,6 +4,19 @@ import json
 import os
 import re
 
+# testNTE
+# 250603-0607      
+# 250603-0604      
+# 250603-0599      
+# 250603-0596      
+# 250603-0584      
+# 250603-0583      
+# 250603-0582      
+# 250603-0574      
+# 250603-0573      
+# 250603-0567  
+# 250603-0551      
+
 server = os.environ.get("serverGFT")
 database = os.environ.get("databaseGFT")
 username = os.environ.get("usernameTKLGFT")
@@ -119,7 +132,6 @@ def getAllPrice(ticketN):
     if not sanitize_input(ticketN):
         raise ValueError("Invalid characters in ticket ID")
 
-    # Then validate format
     try:
         conn_str = f"DRIVER={SQLaddress};SERVER={server};DATABASE={database};UID={username};PWD={password};TrustServerCertificate=yes;"
         conn = pyodbc.connect(conn_str)
@@ -129,7 +141,7 @@ def getAllPrice(ticketN):
         cursor.execute(sql_query, ticketN)
         sql_query = cursor.fetchall()
         rows_transposed = [sql_query for sql_query in zip(*sql_query)]
-        ticketDf = pd.DataFrame(dict(zip(["LOC_Address", "LOC_CUSTNMBR", "LOC_LOCATNNM", "LOC_ADRSCODE", "LOC_CUSTNAME", "LOC_PHONE", "CITY", "STATE", "ZIP", "Pricing_Matrix_Name", "BranchName", "CUST_NAME", "CUST_ADDRESS1", "CUST_ADDRESS2", "CUST_ADDRESS3", "CUST_CITY", "CUST_State", "CUST_Zip", "Tax_Rate", "MailDispatch", "Purchase_Order", "Bill_Customer_Number"], rows_transposed)))
+        ticketDf = pd.DataFrame(dict(zip(["LOC_Address", "LOC_CUSTNMBR", "LOC_LOCATNNM", "LOC_ADRSCODE", "LOC_CUSTNAME", "LOC_PHONE", "CITY", "STATE", "ZIP", "Pricing_Matrix_Name", "BranchName", "CUST_NAME", "CUST_ADDRESS1", "CUST_ADDRESS2", "CUST_ADDRESS3", "CUST_CITY", "CUST_State", "CUST_Zip", "Tax_Rate", "MailDispatch", "Purchase_Order", "Bill_Customer_Number","NTE"], rows_transposed)))
         sql_query = """Exec [CF_Univ_Quote_LRates] @Service_TK = ?;"""
         cursor.execute(sql_query, ticketN)
         sql_query = cursor.fetchall()
