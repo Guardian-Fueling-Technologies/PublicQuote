@@ -31,6 +31,8 @@ from twilio.rest import Client
 import os
 # ["+19046767222","+13213770708"]
 
+# remove nte exceeding add ticketid df NTE
+
 def notify_it_on_error(ip_address, user_input):
     try:
         # Get Twilio credentials from environment variables
@@ -240,8 +242,8 @@ def techPage():
             c.drawString(25, 665.55, str(st.session_state.ticketDf['CUST_ADDRESS1'].values[0]))
             c.drawString(25, 655.55, str(st.session_state.ticketDf['CUST_ADDRESS2'].values[0]) + " " + str(st.session_state.ticketDf['CUST_ADDRESS3'].values[0]) + " " +
                         str(st.session_state.ticketDf['CUST_CITY'].values[0]) + " " + str(st.session_state.ticketDf['CUST_Zip'].values[0]))
-            
-            if st.session_state.ticketDf["NTE"][0] != 0 and total_price_with_tax > st.session_state.ticketDf["NTE"][0]:
+            print((st.session_state.ticketDf["NTE"][0] > 0.00))
+            if st.session_state.ticketDf["NTE"][0] > 0.00 and total_price_with_tax > st.session_state.ticketDf["NTE"][0]:
                     # Define box dimensions and position (adjust as needed)
                 box_width = 200
                 box_height = 50
